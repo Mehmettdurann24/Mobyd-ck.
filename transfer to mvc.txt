@@ -1,0 +1,95 @@
+//CREATE CLASS
+
+namespace Words.Models
+{
+    public class Kelimeler
+    {
+        public int Count { get; set; }
+        public string Kelime { get; set; }
+    }
+}
+
+
+//CONTROLLER
+
+using System.Collections.Generic;
+using System.Web.Mvc;
+using Words.Models;
+using System.Xml;
+
+namespace Words.Controllers
+{
+    public class Word : Controller
+    {
+        // GET: Word
+        public ActionResult Index()
+        {
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(Server.MapPath(@"~\dosya\moby dýck"));
+            List<Kelimeler> kelime = new List<Kelimeler>();
+
+            var nodes = doc.SelectNodes("/Words/word");
+
+            foreach (XmlElement node in nodes)
+            {
+                string attributeValue = node.GetAttribute("text");
+
+                string attributeValue2 = node.GetAttribute("count");
+
+                kelime.Add(new Kelimeler
+                {
+                    Count = int.Parse(attributeValue2),
+                    Kelime = attributeValue
+
+                }
+                 );
+            }
+            return View(kelime);
+        }
+    }
+}
+
+
+
+//VÝEWS
+
+
+@using Words.Models
+
+@model List<Kelimeler>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="block">
+            <div class="block-heading">
+
+            </div>
+            <div class="block-content-outer">
+                <div class="block-content-inner">
+                    <table class="table table-responsive" border="1">
+                        <thead>
+                            <tr class=bg-info>
+                                <th>Kelime</th>
+                                <th>Sayýsý</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Kelimeler kelimeler in Model)
+                            {
+                                <tr>
+                                    <td>@kelimeler.Kelime</td>
+                                    <td>@kelimeler.Count</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

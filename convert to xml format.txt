@@ -1,0 +1,45 @@
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Xml.Linq;
+
+namespace ConsoleApplication1
+
+{
+    class Program
+    {
+       
+
+        static void Main(string[] args)
+        {
+            const string serverName = @"DESKTOP-MH9JFR9";
+            const string database = "MOBYDICK";
+            SqlDataAdapter da;
+            string strCon = string.Format("Data Source=DESKTOP-MH9JFR9;Initial Catalog=MOBYDICK;Integrated Security=True",
+                serverName, database);
+
+            SqlConnection conn = new SqlConnection(strCon);
+            conn.Open();
+            da = new SqlDataAdapter("SELECT *FROM Words", conn);
+            DataTable tablo = new DataTable();
+            da.Fill(tablo);
+            Dictionary<string, int> dem = tablo.AsEnumerable().ToDictionary(row => row.Field<string>(0),
+                                row => row.Field<int>(1));        
+            conn.Close();
+            
+   XElement root = new XElement("Words",
+    from keyValue in dem
+    select 
+  
+     new XElement("word",
+        new XAttribute("count",keyValue.Value),
+        new XAttribute ("text",keyValue.Key))
+    );
+            root.Save(@"C:\c#\moby dýck.xml");
+        }
+        }
+ 
+}
+           
+    

@@ -1,0 +1,59 @@
+using System;
+using System.Data.SqlClient;
+using System.Text.RegularExpressions;
+
+
+namespace moddy_dick
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int k, l, j, sayac = 0;
+            string dosya_yolu = @"c:\c#\moby dýck.txt";
+            string metin = System.IO.File.ReadAllText(dosya_yolu);
+
+            metin = Regex.Replace(metin, "[^a-zA-Z0-9% ._]", " ");
+            metin = Regex.Replace(metin, @"[\d-]"," ");
+            metin = metin.Replace(".", " ");
+            metin = metin.Replace("i", "ý");
+            metin = metin.Replace("_", " ");
+
+            string[] words = metin.Split(" ");
+            SqlConnection baðlan = new SqlConnection("Data Source=DESKTOP-MH9JFR9;Initial Catalog=MOBYDICK;Integrated Security=True");
+            baðlan.Open();
+            for (j = 0; j < words.Length; j++)
+            {
+                if (words[j].Trim().Length != 0)
+                {
+                    for (k = 0; k < words.Length; k++)
+                    {
+                        if (words[j].ToUpper() == words[k].ToUpper())
+                        {
+                            for (l = 0; l < j; l++)
+                            {
+
+                                if (words[l].ToUpper() == words[j].ToUpper())
+
+                                    sayac = -1;
+                            }
+                            sayac++;
+                        }
+                    }
+
+                    if (sayac != 0)
+                    {
+                        SqlCommand komut = new SqlCommand("insert into Words(Word,Count) values ('" + words[j].ToUpper() + "','" + sayac + "')", baðlan);
+                        komut.ExecuteNonQuery();
+                    }
+
+                    sayac = 0;
+                }
+                else;
+            }
+            baðlan.Close();
+
+            Console.ReadKey();
+        }
+    }
+}
